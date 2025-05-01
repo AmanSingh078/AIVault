@@ -1,0 +1,127 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StellarBridge Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .tab-button {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .tab-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .tab-card {
+      transition: all 0.3s ease-in-out;
+    }
+    .tab-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    body {
+      background: linear-gradient(120deg, #e0eafc, #cfdef3);
+    }
+  </style>
+</head>
+<body class="min-h-screen p-6 font-sans text-gray-800">
+  <div class="text-center mb-10">
+    <h1 class="text-5xl font-extrabold mb-4 text-indigo-700 drop-shadow-md">🚀 StellarBridge</h1>
+    <p class="text-xl text-gray-700 max-w-2xl mx-auto italic">
+      Your all-in-one decentralized gateway for financial freedom and digital empowerment.
+    </p>
+  </div>
+
+  <div class="w-full max-w-6xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <button onclick="showTab('micropay')" class="tab-button px-4 py-2 bg-blue-600 text-white rounded-full font-semibold shadow">💸 MicroPay</button>
+      <button onclick="showTab('artchain')" class="tab-button px-4 py-2 bg-green-600 text-white rounded-full font-semibold shadow">🎨 ArtChain</button>
+      <button onclick="showTab('accesswallet')" class="tab-button px-4 py-2 bg-purple-600 text-white rounded-full font-semibold shadow">💳 AccessWallet</button>
+      <button onclick="showTab('meditoken')" class="tab-button px-4 py-2 bg-red-600 text-white rounded-full font-semibold shadow">🏥 MediToken</button>
+      <button onclick="showTab('educred')" class="tab-button px-4 py-2 bg-yellow-500 text-white rounded-full font-semibold shadow">🎓 EduCred</button>
+    </div>
+
+    <div id="micropay" class="tab-content">
+      <div class="bg-white tab-card rounded-2xl p-8 shadow-xl">
+        <h2 class="text-4xl font-bold mb-2 text-blue-700">MicroPay</h2>
+        <p class="text-gray-600 mb-6 text-lg">Send and receive cross-border payments instantly using Stellar stablecoins.</p>
+        <button onclick="connectWallet()" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition duration-300 shadow-lg">🔗 Connect Wallet</button>
+        <p id="walletAddress" class="mt-4 text-blue-800 font-mono"></p>
+      </div>
+    </div>
+
+    <div id="artchain" class="tab-content hidden">
+      <div class="bg-white tab-card rounded-2xl p-8 shadow-xl">
+        <h2 class="text-4xl font-bold mb-2 text-green-700">ArtChain</h2>
+        <p class="text-gray-600 mb-6 text-lg">Mint NFTs with built-in royalty enforcement powered by Stellar.</p>
+        <button class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-semibold transition duration-300 shadow-lg">🎨 Launch NFT Studio</button>
+      </div>
+    </div>
+
+    <div id="accesswallet" class="tab-content hidden">
+      <div class="bg-white tab-card rounded-2xl p-8 shadow-xl">
+        <h2 class="text-4xl font-bold mb-2 text-purple-700">AccessWallet</h2>
+        <p class="text-gray-600 mb-6 text-lg">Manage funds, link debit cards, and enable payments with low fees.</p>
+        <button class="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-semibold transition duration-300 shadow-lg">💳 Open Wallet</button>
+      </div>
+    </div>
+
+    <div id="meditoken" class="tab-content hidden">
+      <div class="bg-white tab-card rounded-2xl p-8 shadow-xl">
+        <h2 class="text-4xl font-bold mb-2 text-red-700">MediToken</h2>
+        <p class="text-gray-600 mb-6 text-lg">Distribute and redeem healthcare subsidies using Stellar assets.</p>
+        <button class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-full font-semibold transition duration-300 shadow-lg">🏥 Issue Health Tokens</button>
+      </div>
+    </div>
+
+    <div id="educred" class="tab-content hidden">
+      <div class="bg-white tab-card rounded-2xl p-8 shadow-xl">
+        <h2 class="text-4xl font-bold mb-2 text-yellow-600">EduCred</h2>
+        <p class="text-gray-600 mb-6 text-lg">Issue, store, and verify academic credentials on the blockchain.</p>
+        <button class="px-8 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full font-semibold transition duration-300 shadow-lg">🎓 View Credentials</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="walletModal" class="fixed inset-0 bg-black bg-opacity-40 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md text-center">
+      <h3 class="text-xl font-bold text-blue-700 mb-2">🔐 Wallet Connected</h3>
+      <p class="text-sm text-gray-700 mb-4">Public Address:</p>
+      <code id="modalAddress" class="block p-2 bg-gray-100 rounded text-sm text-blue-800 font-mono"></code>
+      <button onclick="closeModal()" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    async function connectWallet() {
+      if (!window.freighterApi) {
+        alert("Freighter wallet not detected! Please install it from freighter.app");
+        return;
+      }
+      try {
+        const publicKey = await window.freighterApi.getPublicKey();
+        document.getElementById("walletAddress").innerText = `Connected: ${publicKey}`;
+        document.getElementById("modalAddress").innerText = publicKey;
+        document.getElementById("walletModal").classList.remove("hidden");
+      } catch (error) {
+        console.error("Wallet connection failed", error);
+        alert("Failed to connect wallet.");
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("walletModal").classList.add("hidden");
+    }
+  </script>
+</body>
+</html>
