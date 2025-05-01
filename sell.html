@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Marketplace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-4xl font-bold text-center text-indigo-600 mb-8">AI Marketplace</h1>
+
+    <!-- SELL SECTION -->
+    <div class="bg-white p-6 rounded-2xl shadow-lg mb-10">
+      <h2 class="text-2xl font-semibold mb-4">Sell Your AI Model</h2>
+      <form id="sellForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" name="name" placeholder="Model Name" required class="p-2 border rounded-xl" />
+        <input type="number" name="price" placeholder="Price (Tokens)" required class="p-2 border rounded-xl" />
+        <input type="text" name="link" placeholder="Model Link (e.g. HuggingFace, GitHub, etc.)" required class="col-span-2 p-2 border rounded-xl" />
+        <textarea name="description" placeholder="Model Description" class="col-span-2 p-2 border rounded-xl"></textarea>
+
+        <!-- New Fields -->
+        <input type="text" name="accountNumber" placeholder="Your Account Number" required class="col-span-2 p-2 border rounded-xl" />
+        <input type="number" name="age" placeholder="Your Age" required class="p-2 border rounded-xl" />
+        <input type="text" name="fullName" placeholder="Your Name" required class="p-2 border rounded-xl" />
+
+        <button type="submit" class="col-span-2 bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition">Submit Model</button>
+      </form>
+    </div>
+
+    <!-- Container for fetched models -->
+    <div id="modelsList" class="grid gap-4"></div>
+
+    <script>
+      // Fetch models
+      async function fetchModels() {
+        const res = await fetch("http://localhost:5000/api/models");
+        const models = await res.json();
+        const container = document.getElementById("modelsList");
+        container.innerHTML = "";
+        models.forEach(model => {
+          const card = document.createElement("div");
+          card.className = "p-4 border rounded-xl bg-gray-50";
+          card.innerHTML = `
+            <h3 class="text-xl font-bold">${model.name}</h3>
+            <p class="text-sm text-gray-600">By ${model.fullName || 'Unknown'}</p>
+            <p class="mt-2">${model.description}</p>
+            <a href="${model.link}" target="_blank" class="text-blue-600 underline mt-2 block">View Model</a>
+            <p class="font-semibold mt-2">Price: ${model.price} Tokens</p>
+            <button onclick="buyModel('${model._id}')" class="mt-2 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700">Buy</button>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      // Buy model
+      async function buyModel(modelId) {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:5000/api/transactions/buy", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token
+          },
+          body: JSON.stringify({ modelId })
+        });
+        const data = await res.json();
+        alert(data.msg || data.error || "Transaction completed!");
+        fetchModels();
+      }
+
+      // Handle sell form
+      document.getElementById("sellForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const body = Object.fromEntries(formData.entries());
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:5000/api/models", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token
+          },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        alert("Model submitted!");
+        fetchModels();
+        e.target.reset();
+      });
+
+      fetchModels();
+    </script>
+
+</body>
+</html>
