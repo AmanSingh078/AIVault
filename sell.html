@@ -24,6 +24,7 @@
         <input type="text" name="accountNumber" placeholder="Your Account Number" required class="col-span-2 p-2 border rounded-xl" />
         <input type="number" name="age" placeholder="Your Age" required class="p-2 border rounded-xl" />
         <input type="text" name="fullName" placeholder="Your Name" required class="p-2 border rounded-xl" />
+        <input type="tel" name="phone" placeholder="Your Phone Number" required class="p-2 border rounded-xl" />
 
         <button type="submit" class="col-span-2 bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition">Submit Model</button>
       </form>
@@ -85,7 +86,11 @@
           body: JSON.stringify(body)
         });
         const data = await res.json();
-        alert("Model submitted!");
+        if (res.ok) {
+          alert("Data submitted successfully! We will contact you soon after reviewing your AI model.");
+        } else {
+          alert("Error: " + (data.error || "Failed to submit model"));
+        }
         fetchModels();
         e.target.reset();
       });
